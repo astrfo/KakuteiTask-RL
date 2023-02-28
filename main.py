@@ -2,7 +2,7 @@ from simulator import Simulator
 
 def main():
     trial = 100 #シミュレーション数
-    episode = 5000
+    episode = 10000
     sim = Simulator(trial, episode)
     sim.run()
 

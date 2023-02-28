@@ -23,17 +23,19 @@ class QLearning:
         if action == 0 or action == 1: #action=0:HL or 1:HR, state=0:START
             #0:START, 1:LL, 2:LN, 3:LR
             max_Q = self.Q[next_state+1] #(状態,行動) = 2:(LL,STAY), 3:(LN,STAY), 4:(LR,STAY)
-            td_error_q = reward + self.gamma * max_Q  - self.Q[action] #(状態,行動) = 0:(START,HL), 1:(START,HR)
+            td_error_q = reward + self.gamma * max_Q - self.Q[action] #(状態,行動) = 0:(START,HL), 1:(START,HR)
             self.Q[action] += self.alpha * td_error_q
             td_error_v = reward + self.gamma * self.V[next_state] - self.V[state]
             self.V[state] += self.alpha * td_error_v
             self.td_error_v[state] = td_error_v
-            return self.Q[0], self.Q[1], False, self.V[0], self.V[1], self.V[2], self.V[3], self.td_error_v
-        else: #action=2:STAY
+            return self.Q, self.V, self.td_error_v
+        else: #action=2:STAY, next_state=4:TN, state=1:(LL), 2:(LN), 3(LR)
+            td_error_q = reward - self.Q[state+1]
+            self.Q[state+1] += self.alpha * td_error_q #(状態,行動) = 2:(LL,STAY), 3:(LN,STAY), 4:(LR,STAY)
             td_error_v = reward - self.V[state]
             self.V[state] += self.alpha * td_error_v
             self.td_error_v[state] = td_error_v
-            return self.Q[0], self.Q[1], True, self.V[0], self.V[1], self.V[2], self.V[3], self.td_error_v
+            return self.Q, self.V, self.td_error_v
 
 
     def softmax(self):

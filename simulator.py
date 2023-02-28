@@ -10,7 +10,7 @@ class Simulator:
         self.epi = episode
         self.env = Environment()
         self.algorithm = QLearning()
-        self.Q = np.zeros((self.sim, self.epi, 2)) #Q_HL, Q_HR
+        self.Q = np.zeros((self.sim, self.epi, 5)) #Q_HL, Q_HR, Q_LL, Q_LN, Q_LR
         self.V = np.zeros((self.sim, self.epi, 4)) #START, LL, LN, LR
         self.td_error_v = np.zeros((self.sim, self.epi, 4)) #START, LL, LN, LR
         self.action_count = np.zeros((self.sim, self.epi, 2)) #HL, HR
@@ -19,13 +19,13 @@ class Simulator:
         for s in tqdm(range(self.sim)):
             self.algorithm.reset()
             for e in range(self.epi):
-                state, done = self.env.reset() #state=START=, #doneは終端状態=True, Not終端状態=False
+                state, done = self.env.reset() #state=START, #doneは終端状態=True, Not終端状態=False
                 while not done:
                     action = self.algorithm.act(state)
-                    reward, next_state = self.env.step(state, action)
-                    Q_HL, Q_HR, done, V_START, V_LL, V_LN, V_LR, td_error_v = self.algorithm.update(state, action, reward, next_state)
-                    self.Q[s, e] = Q_HL, Q_HR
-                    self.V[s, e] = V_START, V_LL, V_LN, V_LR
+                    next_state, reward, done = self.env.step(action)
+                    Q, V, td_error_v = self.algorithm.update(state, action, reward, next_state)
+                    self.Q[s, e] = Q
+                    self.V[s, e] = V
                     self.td_error_v[s, e] = td_error_v
                     state = next_state
                     if action != 2: self.action_count[s, e, action] = 1
@@ -38,6 +38,9 @@ class Simulator:
         figure = plt.figure(figsize=(12, 8))
         plt.plot(np.arange(self.epi), np.mean(self.Q[:, :, 0], axis=0), label='Q_HL')
         plt.plot(np.arange(self.epi), np.mean(self.Q[:, :, 1], axis=0), label='Q_HR')
+        plt.plot(np.arange(self.epi), np.mean(self.Q[:, :, 2], axis=0), label='Q_LL_TN')
+        plt.plot(np.arange(self.epi), np.mean(self.Q[:, :, 3], axis=0), label='Q_LN_TN')
+        plt.plot(np.arange(self.epi), np.mean(self.Q[:, :, 4], axis=0), label='Q_LR_TN')
         plt.title(f'Q-learning, sim={self.sim}, epi={self.epi}')
         plt.xlabel('episode')
         plt.ylabel('average Q')

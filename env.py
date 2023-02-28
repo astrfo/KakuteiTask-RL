@@ -13,8 +13,8 @@ class Environment:
     def update_state(self, action):
         if action == 0: #action=HL, p=0.5でLL遷移, p=0.5でLN遷移
             if np.random.rand() >= 0.5:
-              self.agent_position = 1 #LLに遷移
-              return self.agent_position
+                self.agent_position = 1 #LLに遷移
+                return self.agent_position
             else:
                 self.agent_position = 2 #LNに遷移
                 return self.agent_position

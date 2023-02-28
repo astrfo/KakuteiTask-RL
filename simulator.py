@@ -10,7 +10,10 @@ class Simulator:
         self.epi = episode
         self.env = Environment()
         self.algorithm = QLearning()
-        self.Q_values = np.zeros((self.sim, self.epi, 2)) #Q_HL, Q_HR
+        self.Q = np.zeros((self.sim, self.epi, 2)) #Q_HL, Q_HR
+        self.V = np.zeros((self.sim, self.epi, 4)) #START, LL, LN, LR
+        self.td_error_v = np.zeros((self.sim, self.epi, 4)) #START, LL, LN, LR
+        self.action_count = np.zeros((self.sim, self.epi, 2)) #HL, HR
 
     def run(self):
         for s in tqdm(range(self.sim)):
@@ -20,19 +23,65 @@ class Simulator:
                 while not done:
                     action = self.algorithm.act(state)
                     reward, next_state = self.env.step(state, action)
-                    Q_HL, Q_HR, done = self.algorithm.update(state, action, reward, next_state)
-                    self.Q_values[s, e] = Q_HL, Q_HR
+                    Q_HL, Q_HR, done, V_START, V_LL, V_LN, V_LR, td_error_v = self.algorithm.update(state, action, reward, next_state)
+                    self.Q[s, e] = Q_HL, Q_HR
+                    self.V[s, e] = V_START, V_LL, V_LN, V_LR
+                    self.td_error_v[s, e] = td_error_v
                     state = next_state
-                    if done:
-                        break
-        self.plot_Q_values()
+                    if action != 2: self.action_count[s, e, action] = 1
+        self.plot_Q()
+        self.plot_V()
+        self.plot_td_error_v()
+        self.plot_rate()
 
-    def plot_Q_values(self):
-        plt.plot(np.arange(self.epi), np.mean(self.Q_values[:, :, 0], axis=0), label='Q_HL')
-        plt.plot(np.arange(self.epi), np.mean(self.Q_values[:, :, 1], axis=0), label='Q_HR')
+    def plot_Q(self):
+        figure = plt.figure(figsize=(12, 8))
+        plt.plot(np.arange(self.epi), np.mean(self.Q[:, :, 0], axis=0), label='Q_HL')
+        plt.plot(np.arange(self.epi), np.mean(self.Q[:, :, 1], axis=0), label='Q_HR')
         plt.title(f'Q-learning, sim={self.sim}, epi={self.epi}')
         plt.xlabel('episode')
-        plt.ylabel('average Q value')
-        plt.ylim(0, 1)
+        plt.ylabel('average Q')
+        plt.ylim(-0.2, 1.2)
         plt.legend()
-        plt.show()
+        plt.savefig('Q.png')
+        plt.close()
+
+    def plot_V(self):
+        figure = plt.figure(figsize=(12, 8))
+        plt.plot(np.arange(self.epi), np.mean(self.V[:, :, 0], axis=0), label='V_START')
+        plt.plot(np.arange(self.epi), np.mean(self.V[:, :, 1], axis=0), label='V_LL')
+        plt.plot(np.arange(self.epi), np.mean(self.V[:, :, 2], axis=0), label='V_LN')
+        plt.plot(np.arange(self.epi), np.mean(self.V[:, :, 3], axis=0), label='V_LR')
+        plt.title(f'Q-learning, sim={self.sim}, epi={self.epi}')
+        plt.xlabel('episode')
+        plt.ylabel('average V')
+        plt.ylim(-0.2, 1.2)
+        plt.legend()
+        plt.savefig('V.png')
+        plt.close()
+
+    def plot_td_error_v(self):
+        figure = plt.figure(figsize=(12, 8))
+        plt.plot(np.arange(self.epi), np.mean(self.td_error_v[:, :, 0], axis=0), label='TD_START', alpha=0.5)
+        plt.plot(np.arange(self.epi), np.mean(self.td_error_v[:, :, 1], axis=0), label='TD_LL', alpha=0.5)
+        plt.plot(np.arange(self.epi), np.mean(self.td_error_v[:, :, 2], axis=0), label='TD_LN', alpha=0.5)
+        plt.plot(np.arange(self.epi), np.mean(self.td_error_v[:, :, 3], axis=0), label='TD_LR', alpha=0.5)
+        plt.title(f'Q-learning, sim={self.sim}, epi={self.epi}')
+        plt.xlabel('episode')
+        plt.ylabel('average TD')
+        plt.ylim(-0.2, 1.2)
+        plt.legend()
+        plt.savefig('TD.png')
+        plt.close()
+
+    def plot_rate(self):
+        figure = plt.figure(figsize=(12, 8))
+        plt.plot(np.arange(self.epi), np.mean(self.action_count[:, :, 0], axis=0), label='HL', alpha=0.5)
+        plt.plot(np.arange(self.epi), np.mean(self.action_count[:, :, 1], axis=0), label='HR', alpha=0.5)
+        plt.title(f'Q-learning, sim={self.sim}, epi={self.epi}')
+        plt.xlabel('episode')
+        plt.ylabel('average action count')
+        plt.ylim(-0.2, 1.2)
+        plt.legend()
+        plt.savefig('action_rate.png')
+        plt.close()

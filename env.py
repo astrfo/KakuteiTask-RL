@@ -6,12 +6,12 @@ class Environment:
         self.start_position = self.map[0] #START=0
         self.agent_position = self.start_position
         self.past_agent_position = self.agent_position
-        self.past_action = -1
+        self.past_action = None
 
     def reset(self):
         self.agent_position = self.start_position
         self.past_agent_position = self.agent_position
-        self.past_action = -1
+        self.past_action = None
         return self.agent_position, False
 
     def update_state(self, action):
@@ -33,9 +33,7 @@ class Environment:
 
     def step(self, action):
         self.update_state(action)
-        reward = self.reward()
-        done = (self.agent_position == 4)
-        return self.agent_position, reward, done
+        return self.agent_position, self.reward(), (self.agent_position == 4)
 
     def reward(self):
         if self.agent_position == 4:

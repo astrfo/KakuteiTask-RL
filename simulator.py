@@ -105,7 +105,7 @@ class Simulator:
         plt.title(f'{self.algorithm.__class__.__name__}, sim={self.sim}, epi={self.epi}')
         plt.xlabel('episode')
         plt.ylabel('average action count')
-        # plt.ylim(-0.2, 1.2)
+        plt.ylim(-0.2, 1.2)
         plt.legend()
         plt.savefig(f'{self.results_dir_path}action_rate.png')
         plt.close()

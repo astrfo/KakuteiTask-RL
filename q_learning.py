@@ -45,9 +45,9 @@ class QLearning:
     def softmax(self):
         if self.state == 0: #state=START
             CanChoiceQ = np.array(self.Q[:2]) #0:HL or 1:HR
-            x = np.exp(CanChoiceQ)
-            u = np.sum(x)
-            p_softmax = x/u
-            return np.random.choice([0, 1], p=p_softmax)
+            CanChoiceQ -= np.max(CanChoiceQ)
+            exp_CanChoiceQ = np.exp(CanChoiceQ)
+            prob = exp_CanChoiceQ / np.sum(exp_CanChoiceQ)
+            return np.random.choice([0, 1], p=prob)
         else: #state=1:LL, 2:LN, 3:LR
-            return 2 #action=2:LN
+            return 2 #action=2:STAY

@@ -6,13 +6,12 @@ from q_learning import QLearning
 from q_learning_bias import QLearningBias
 
 class Simulator:
-    def __init__(self, simulation, episode, results_dir_path):
+    def __init__(self, simulation, episode, policy, results_dir_path):
         self.sim = simulation
         self.epi = episode
         self.results_dir_path = results_dir_path
         self.env = Environment()
-        self.algorithm = QLearning()
-        # self.algorithm = QLearningBias()
+        self.algorithm = policy
         self.Q = np.zeros((self.sim, self.epi, 5)) #Q_HL, Q_HR, Q_LL, Q_LN, Q_LR
         self.V = np.zeros((self.sim, self.epi, 4)) #START, LL, LN, LR
         self.td_error_q = np.zeros((self.sim, self.epi, 5)) #Q_HL, Q_HR, Q_LL, Q_LN, Q_LR
@@ -104,7 +103,7 @@ class Simulator:
         plt.plot(np.arange(self.epi), np.mean(self.action_count[:, :, 1], axis=0), label='HR', alpha=0.5)
         plt.title(f'{self.algorithm.__class__.__name__}, sim={self.sim}, epi={self.epi}')
         plt.xlabel('episode')
-        plt.ylabel('average action count')
+        plt.ylabel('average action rate')
         plt.ylim(-0.2, 1.2)
         plt.legend()
         plt.savefig(f'{self.results_dir_path}action_rate.png')

@@ -2,8 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from env import Environment
-from q_learning import QLearning
-from q_learning_bias import QLearningBias
 
 
 class Simulator:

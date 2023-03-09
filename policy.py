@@ -42,7 +42,6 @@ class QLearning:
             self.td_error_v[state] = td_error_v
             return self.Q, self.V, self.td_error_q, self.td_error_v
 
-
     def softmax(self, state):
         if state == 0: #state=START
             CanChoiceQ = np.array(self.Q[:2]) #0:HL or 1:HR
@@ -53,3 +52,50 @@ class QLearning:
             return np.random.choice([0, 1], p=prob)
         else: #state=1:LL, 2:LN, 3:LR
             return 2 #action=2:STAY
+
+
+class QLearningTDbias(QLearning):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.bias_weight = kwargs['biasWeight']
+        self.Q_bias = np.zeros(5)
+
+    def reset(self):
+        super().reset()
+        self.Q_bias = np.zeros(5)
+
+    def act(self, state):
+        action = self.bias_softmax(state)
+        return action
+
+    def update(self, state, action, reward, next_state):
+        if action == 0 or action == 1:
+            max_Q = self.Q[next_state+1]
+            td_error_q = reward + self.gamma * max_Q - self.Q[action]
+            self.Q[action] += self.alpha * td_error_q
+            self.td_error_q[action] = td_error_q
+            td_error_v = reward + self.gamma * self.V[next_state] - self.V[state]
+            self.V[state] += self.alpha * td_error_v
+            self.td_error_v[state] = td_error_v
+            self.Q_bias[action] = self.Q[action] + np.abs(td_error_q) * self.bias_weight ###Q値に何かしらのバイアスを掛ける
+            return self.Q, self.V, self.td_error_q, self.td_error_v
+        else:
+            td_error_q = reward - self.Q[state+1]
+            self.Q[state+1] += self.alpha * td_error_q
+            self.td_error_q[state+1] = td_error_q
+            td_error_v = reward - self.V[state]
+            self.V[state] += self.alpha * td_error_v
+            self.td_error_v[state] = td_error_v
+            self.Q_bias[state+1] = self.Q[state+1] + np.abs(td_error_q) * self.bias_weight ###Q値に何かしらのバイアスを掛ける
+            return self.Q, self.V, self.td_error_q, self.td_error_v
+
+    def bias_softmax(self, state):
+        if state == 0:
+            CanChoiceQ = np.array(self.Q_bias[:2])
+            CanChoiceQ *= self.beta
+            CanChoiceQ -= np.max(CanChoiceQ)
+            exp_CanChoiceQ = np.exp(CanChoiceQ)
+            prob = exp_CanChoiceQ / np.sum(exp_CanChoiceQ)
+            return np.random.choice([0, 1], p=prob)
+        else:
+            return 2

@@ -2,18 +2,17 @@ import os
 from datetime import datetime
 from make_folder import compare_base_make_folder
 from simulator import Simulator
-from q_learning import QLearning
-from q_learning_bias import QLearningBias
+from policy import QLearning, QLearningTDbias
 
 
 if __name__ == '__main__':
-    algo = 'Qbias' #Q or Qbias
+    algo = 'Q_TD' #Q or Q_TD
     simulation = 100
     episode = 10000
     alpha = 0.01
     beta = 5
     gamma = 0.9
-    bias_weight = 5
+    bias_weight = 1
 
     ex_param = {
         'sim': simulation,
@@ -27,8 +26,8 @@ if __name__ == '__main__':
     if algo == 'Q':
         policy = QLearning(**ex_param)
         results_dir_path = compare_base_make_folder(algo, ex_param)
-    elif algo == 'Qbias':
-        policy = QLearningBias(**ex_param)
+    elif algo == 'Q_TD':
+        policy = QLearningTDbias(**ex_param)
         results_dir_path = compare_base_make_folder(algo, ex_param)
     else:
         print(f'Not found algorithm {algo}')

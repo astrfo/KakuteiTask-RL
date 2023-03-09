@@ -7,7 +7,7 @@ from q_learning_bias import QLearningBias
 
 
 if __name__ == '__main__':
-    algo = 'Qbias' #Q or Qbias
+    algo = 'Q' #Q or Qbias
     simulation = 100
     episode = 10000
     alpha = 0.01
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     }
 
     if algo == 'Q':
-        policy = QLearning()
+        policy = QLearning(**ex_param)
         results_dir_path = compare_base_make_folder(algo, ex_param)
     elif algo == 'Qbias':
         policy = QLearningBias()
@@ -34,5 +34,5 @@ if __name__ == '__main__':
         print(f'Not found algorithm {algo}')
         exit(1)
 
-    sim = Simulator(simulation, episode, results_dir_path)
+    sim = Simulator(simulation, episode, policy, results_dir_path)
     sim.run()

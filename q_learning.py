@@ -1,9 +1,10 @@
 import numpy as np
 
 class QLearning:
-    def __init__(self):
-        self.alpha = 0.01
-        self.gamma = 0.9
+    def __init__(self, **kwargs):
+        self.alpha = kwargs['alpha']
+        self.beta = kwargs['beta']
+        self.gamma = kwargs['gamma']
         self.actions = np.array([0, 1, 2]) #0:HL, 1:HR, 2:STAY
         self.Q = np.zeros(5) #(状態,行動) = 0:(START,HL), 1:(START,HR), 2:(LL,STAY), 3:(LN,STAY), 4:(LR,STAY)
         self.V = np.zeros(4) #(状態) = 0:(START), 1:(LL), 2:(LN), 3(LR)
@@ -45,6 +46,7 @@ class QLearning:
     def softmax(self):
         if self.state == 0: #state=START
             CanChoiceQ = np.array(self.Q[:2]) #0:HL or 1:HR
+            CanChoiceQ *= self.beta
             CanChoiceQ -= np.max(CanChoiceQ)
             exp_CanChoiceQ = np.exp(CanChoiceQ)
             prob = exp_CanChoiceQ / np.sum(exp_CanChoiceQ)

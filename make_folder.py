@@ -9,7 +9,7 @@ def compare_base_make_folder(algo, ex_param):
         'alpha': 0.01,
         'beta': 5,
         'gamma': 0.9,
-        'biasWeight': 5,
+        'biasWeight': 1,
     }
     folder_name = algo
     for (base_k, base_v), (ex_k, ex_v) in zip(base_param.items(), ex_param.items()):

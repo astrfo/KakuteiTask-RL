@@ -77,7 +77,7 @@ class QLearningTDbias(QLearning):
             td_error_v = reward + self.gamma * self.V[next_state] - self.V[state]
             self.V[state] += self.alpha * td_error_v
             self.td_error_v[state] = td_error_v
-            self.Q_bias[action] = self.Q[action] + np.abs(td_error_q) * self.bias_weight ###Q値に何かしらのバイアスを掛ける
+            self.Q_bias[action] = self.Q[action] + np.abs(td_error_q) * self.bias_weight
             return self.Q, self.V, self.td_error_q, self.td_error_v
         else:
             td_error_q = reward - self.Q[state+1]
@@ -86,7 +86,7 @@ class QLearningTDbias(QLearning):
             td_error_v = reward - self.V[state]
             self.V[state] += self.alpha * td_error_v
             self.td_error_v[state] = td_error_v
-            self.Q_bias[state+1] = self.Q[state+1] + np.abs(td_error_q) * self.bias_weight ###Q値に何かしらのバイアスを掛ける
+            self.Q_bias[state+1] = self.Q[state+1] + np.abs(td_error_q) * self.bias_weight
             return self.Q, self.V, self.td_error_q, self.td_error_v
 
     def bias_softmax(self, state):

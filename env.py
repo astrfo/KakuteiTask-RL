@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Environment:
     def __init__(self):
         self.map = np.array([0, 1, 2, 3, 4]) #0:START, 1:LL, 2:LN, 3:LR, 4:TN

@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 
+
 def compare_base_make_folder(algo, ex_param):
     base_param = {
         'sim': 100,

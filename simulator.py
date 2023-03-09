@@ -5,6 +5,7 @@ from env import Environment
 from q_learning import QLearning
 from q_learning_bias import QLearningBias
 
+
 class Simulator:
     def __init__(self, simulation, episode, policy, results_dir_path):
         self.sim = simulation

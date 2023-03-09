@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class QLearning:
     def __init__(self, **kwargs):
         self.alpha = kwargs['alpha']
@@ -18,9 +19,8 @@ class QLearning:
         self.td_error_v = np.zeros(4)
 
     def act(self, state):
-        self.state = state
-        self.action = self.softmax()
-        return self.action
+        action = self.softmax(state)
+        return action
 
     def update(self, state, action, reward, next_state):
         if action == 0 or action == 1: #action=0:HL or 1:HR, state=0:START
@@ -43,8 +43,8 @@ class QLearning:
             return self.Q, self.V, self.td_error_q, self.td_error_v
 
 
-    def softmax(self):
-        if self.state == 0: #state=START
+    def softmax(self, state):
+        if state == 0: #state=START
             CanChoiceQ = np.array(self.Q[:2]) #0:HL or 1:HR
             CanChoiceQ *= self.beta
             CanChoiceQ -= np.max(CanChoiceQ)

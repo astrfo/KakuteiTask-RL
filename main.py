@@ -8,7 +8,7 @@ from policy import QLearning, QLearningTDbias
 if __name__ == '__main__':
     algo = 'Q_TD' #Q or Q_TD
     simulation = 100
-    episode = 10000
+    episode = 1000
     alpha = 0.01
     beta = 5
     gamma = 0.9
